@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظم الجدول الأسبوعي</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e1e8ed;
+            --weekend-color: #fff5f5;
+            --accent-color: #ff6b6b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #666;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Form Styling */
+        .task-form {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Grid Timetable Styling */
+        .timetable {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .timetable {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .timetable {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .day-column {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .day-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .day-column.weekend .day-header {
+            background: var(--accent-color);
+        }
+
+        .day-column.weekend {
+            background: var(--weekend-color);
+        }
+
+        .task-list {
+            padding: 10px;
+            list-style: none;
+            flex-grow: 1;
+            min-height: 150px;
+        }
+
+        .task-item {
+            background: #f9fbfd;
+            border-right: 4px solid var(--primary-color);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: #888;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .btn-delete {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+
+        .btn-delete:hover {
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>منظم الجدول الأسبوعي</h1>
+        <p>قم بالتخطيط لأسبوعك وإضافة مهامك اليومية بكل سهولة</p>
+    </header>
+
+    <div class="container">
+        <!-- Form to add tasks -->
+        <div class="task-form">
+            <div class="form-group">
+                <label for="taskName">المهمة / النشاط</label>
+                <input type="text" id="taskName" placeholder="مثلاً: ممارسة الرياضة، المذاكرة..." required>
+            </div>
+            <div class="form-group">
+                <label for="taskDay">اليوم</label>
+                <select id="taskDay">
+                    <option value="sat">السبت</option>
+                    <option value="sun">الأحد</option>
+                    <option value="mon">الإثنين</option>
+                    <option value="tue">الثلاثاء</option>
+                    <option value="wed">الأربعاء</option>
+                    <option value="thu">الخميس</option>
+                    <option value="fri">الجمعة</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="taskTime">الوقت</label>
+                <input type="time" id="taskTime" required>
+            </div>
+            <button class="btn-submit" onclick="addTask()">إضافة إلى الجدول</button>
+        </div>
+
+        <!-- Timetable Grid -->
+        <div class="timetable">
+            <!-- السبت -->
+            <div class="day-column" id="day-sat">
+                <div class="day-header">السبت</div>
+                <ul class="task-list" id="list-sat"></ul>
+            </div>
+            <!-- الأحد -->
+            <div class="day-column" id="day-sun">
+                <div class="day-header">الأحد</div>
+                <ul class="task-list" id="list-sun"></ul>
+            </div>
+            <!-- الإثنين -->
+            <div class="day-column" id="day-mon">
+                <div class="day-header">الإثنين</div>
+                <ul class="task-list" id="list-mon"></ul>
+            </div>
+            <!-- الثلاثاء -->
+            <div class="day-column" id="day-tue">
+                <div class="day-header">الثلاثاء</div>
+                <ul class="task-list" id="list-tue"></ul>
+            </div>
+            <!-- الأربعاء -->
+            <div class="day-column" id="day-wed">
+                <div class="day-header">الأربعاء</div>
+                <ul class="task-list" id="list-wed"></ul>
+            </div>
+            <!-- الخميس -->
+            <div class="day-column" id="day-thu">
+                <div class="day-header">الخميس</div>
+                <ul class="task-list" id="list-thu"></ul>
+            </div>
+            <!-- الجمعة -->
+            <div class="day-column weekend" id="day-fri">
+                <div class="day-header">الجمعة</div>
+                <ul class="task-list" id="list-fri"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load tasks from LocalStorage on page load
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        function addTask() {
+            const nameInput = document.getElementById('taskName');
+            const daySelect = document.getElementById('taskDay');
+            const timeInput = document.getElementById('taskTime');
+
+            if (!nameInput.value || !timeInput.value) {
+                alert('الرجاء ملء جميع الحقول المطلوبة!');
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                name: nameInput.value,
+                day: daySelect.value,
+                time: timeInput.value
+            };
+
+            // Save to LocalStorage
+            let tasks = JSON.parse(localStorage.getItem('weeklyTasks')) || [];
+            tasks.push(task);
+            localStorage.setItem('weeklyTasks', JSON.stringify(tasks));
+
+            // Render Task
+            renderTask(task);
+
+            // Clear Input
+            nameInput.value = '';
+            timeInput.value = '';
+        }
+
+        function renderTask(task) {
+            const list = document.getElementById(`list-${task.day}`);
+            
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            li.setAttribute('data-id', task.id);
+            
+            li.innerHTML = `
+                <span class="task-time">${task.time}</span>
+                <span class="task-title">${task.name}</span>
+                <button class="btn-delete" onclick="deleteTask(${task.id}, '${task.day}')">✕</button>
+            `;
+            
+            list.appendChild(li);
+            sortTasks(list);
+        }
+
+        function deleteTask(id, day) {
+            // Remove from UI
+            const item = document.querySelector(`[data-id="${id}"]`);
+            if (item) item.remove();
+
+            // Remove from LocalStorage
+            let tasks = JSON.parse(localStorage.getItem('weeklyTasks')) || [];
+            tasks = tasks.filter(task => task.id !== id);
+            localStorage.setItem('weeklyTasks', JSON.stringify(tasks));
+        }
+
+        function loadTasks() {
+            let tasks = JSON.parse(localStorage.getItem('weeklyTasks')) || [];
+            tasks.forEach(task => renderTask(task));
+        }
+
+        function sortTasks(list) {
+            const items = Array.from(list.children);
+            items.sort((a, b) => {
+                const timeA = a.querySelector('.task-time').innerText;
+                const timeB = b.querySelector('.task-time').innerText;
+                return timeA.localeCompare(timeB);
+            });
+            items.forEach(item => list.appendChild(item));
+        }
+    </script>
+</body>
+</html>
